@@ -22,7 +22,8 @@
                         android:layout_weight="1"
                         android:layout_height="160dp"
                         android:src="@drawable/card"
-                        android:padding="@dimen/above_below_padding"/>
+                        android:padding="@dimen/above_below_padding"
+                        android:id="@+id/card"/>
                     <ImageView
                         android:layout_width="0dp"
                         android:layout_weight="1"

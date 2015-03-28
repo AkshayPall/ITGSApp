@@ -20,6 +20,10 @@
             android:name=".CardsActivity"
             android:label="@string/title_activity_cards" >
         </activity>
+        <activity
+            android:name=".InfoCard"
+            android:label="@string/title_activity_info_card" >
+        </activity>
     </application>
 
 </manifest>

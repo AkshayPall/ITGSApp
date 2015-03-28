@@ -6,6 +6,7 @@
     <string name="placeholder">Placeholder</string>
     <string name="placeholder_caps">PLACEHOLDER</string>
     <string name="filter">Filter</string>
+    <string name="flip">Flip</string>
 
     <string name="unit_internet">Internet</string>
     <string name="units_title_text">UNITS</string>
@@ -15,6 +16,7 @@
 
     <string name="all_unit_text">All</string>
     <string name="title_activity_cards">CardsActivity</string>
+    <string name="title_activity_info_card">InfoCard</string>
 
 
 </resources>
