@@ -3,7 +3,8 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.example.akshaypall.itgsapp.CardsActivity">
     <item android:id="@+id/action_settings"
-          android:title="@string/action_settings"
+          android:title="@string/filter"
           android:orderInCategory="100"
-          app:showAsAction="never"/>
+          android:icon="@drawable/abc_ic_search_api_mtrl_alpha"
+          app:showAsAction="always"/>
 </menu>

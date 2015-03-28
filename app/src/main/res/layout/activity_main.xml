@@ -19,7 +19,8 @@
             android:paddingBottom="@dimen/above_below_padding"
             android:paddingLeft="@dimen/left_right_padding"
             android:paddingRight="@dimen/left_right_padding"
-            android:paddingTop="@dimen/above_below_padding">
+            android:paddingTop="@dimen/above_below_padding"
+            android:id="@+id/test">
 
             <ImageView
                 android:layout_width="@dimen/circle_color_radius"
