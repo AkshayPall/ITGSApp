@@ -10,6 +10,8 @@
     <dimen name="circle_color_radius">25dp</dimen>
     <dimen name="circle_color_padding">4dp</dimen>
 
+    <dimen name="cards_preview_height">160dp</dimen>
+
     <dimen name="main_divider_text_top_margin">16dp</dimen>
     <dimen name="main_divider_text_below_margin">8dp</dimen>
     <dimen name="main_divider_text_left_margin">16dp</dimen>
