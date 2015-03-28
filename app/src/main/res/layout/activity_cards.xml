@@ -17,10 +17,96 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                     <ImageView
-                        android:layout_width="200dp"
-                        android:layout_height="60dp"
-                        android:src="@drawable/card"/>
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="160dp"
+                        android:src="@drawable/card"
+                        android:padding="@dimen/above_below_padding"/>
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="160dp"
+                        android:src="@drawable/card"
+                        android:padding="@dimen/above_below_padding"/>
+
                 </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="160dp"
+                android:src="@drawable/card"
+                android:padding="@dimen/above_below_padding"/>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="160dp"
+                android:src="@drawable/card"
+                android:padding="@dimen/above_below_padding"/>
+
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="160dp"
+                android:src="@drawable/card"
+                android:padding="@dimen/above_below_padding"/>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="160dp"
+                android:src="@drawable/card"
+                android:padding="@dimen/above_below_padding"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="160dp"
+                android:src="@drawable/card"
+                android:padding="@dimen/above_below_padding"/>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="160dp"
+                android:src="@drawable/card"
+                android:padding="@dimen/above_below_padding"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="160dp"
+                android:src="@drawable/card"
+                android:padding="@dimen/above_below_padding"/>
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="160dp"
+                android:src="@drawable/card"
+                android:padding="@dimen/above_below_padding"/>
+
+        </LinearLayout>
+
+
+
+
+    </LinearLayout>
 
 </ScrollView>
