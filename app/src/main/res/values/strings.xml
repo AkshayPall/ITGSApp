@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ITGSApp</string>
+    <string name="app_name">ITGS Prep</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
@@ -15,8 +15,8 @@
     <string name="colour_red">Red</string>
 
     <string name="all_unit_text">All</string>
-    <string name="title_activity_cards">CardsActivity</string>
-    <string name="title_activity_info_card">InfoCard</string>
+    <string name="title_activity_cards">Cards List</string>
+    <string name="title_activity_info_card">Selected Card</string>
 
 
 </resources>
