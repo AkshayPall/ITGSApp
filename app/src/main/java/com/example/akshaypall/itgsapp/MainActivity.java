@@ -8,14 +8,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import com.parse.Parse;
+import com.parse.ParseObject;
 
 
 public class MainActivity extends ActionBarActivity {
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, mApplicationId, mClientKey);
 
         RelativeLayout view = (RelativeLayout)findViewById(R.id.test);
         view.setOnClickListener(new View.OnClickListener() {
