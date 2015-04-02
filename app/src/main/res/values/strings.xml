@@ -17,6 +17,7 @@
     <string name="all_unit_text">All</string>
     <string name="title_activity_cards">Cards List</string>
     <string name="title_activity_info_card">Selected Card</string>
+    <string name = "lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc lacus enim, bibendum vel interdum at, lacinia quis eros. Integer nec porttitor justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Duis lacinia felis id felis dapibus accumsan. Duis faucibus ornare quam, a ultricies tellus ornare malesuada. Interdum et malesuada fames ac ante ipsum primis in faucibus. Vestibulum congue, nisi sed eleifend sodales, enim nisl aliquet erat, id placerat metus lorem nec erat. Aenean mattis dui neque, non efficitur quam sagittis ut.</string>
 
 
 </resources>
