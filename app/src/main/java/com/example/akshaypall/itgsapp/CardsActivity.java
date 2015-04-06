@@ -39,7 +39,6 @@ public class CardsActivity
 //        cardsGrid.setAdapter(cardButtonArrayAdapter);
 
 
-
     }
 
     @Override
@@ -93,21 +92,6 @@ public class CardsActivity
 
             /* Do the database query here, then set text. */
             button.setText("Global positioning system");
-
-/*
-            cardsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener()
-            {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-                {
-                    Log.d(TAG, "Item clicked");
-                    Intent intent = new Intent(CardsActivity.this, InfoCard.class);
-                    intent.putExtra(InfoCard.EXTRA, cardsGrid.getItemAtPosition(position).toString());
-                    startActivity(intent);
-                }
-
-            });
-*/
             button.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -115,12 +99,10 @@ public class CardsActivity
                 {
                     Log.d(TAG, "Item clicked");
                     Intent intent = new Intent(CardsActivity.this, InfoCard.class);
-//                    int id = view.getId();
 //                    intent.putExtra(InfoCard.EXTRA, cardsGrid.getItemAtPosition(position).toString());
                     startActivity(intent);
                 }
             });
-
 
             return convertView;
         }
