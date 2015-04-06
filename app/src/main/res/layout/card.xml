@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/card_list_button"
+        android:focusable="true"
+        android:layout_width="160dp"
+        android:layout_height="80dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        >
+</Button>
+
+

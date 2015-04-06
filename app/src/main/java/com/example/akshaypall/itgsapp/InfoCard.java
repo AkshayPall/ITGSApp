@@ -1,36 +1,93 @@
 package com.example.akshaypall.itgsapp;
 
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import java.util.List;
 
 
-public class InfoCard extends ActionBarActivity {
+public class InfoCard
+        extends ActionBarActivity
+{
+
+    public static final String EXTRA = "extra";
+    private TextView mCardText;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info_card);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null)
+        {
+            String title = extras.getString(EXTRA);
+        }
+        mCardText = (TextView) findViewById(R.id.card_text);
+
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("FelixTest");
+        query.whereEqualTo("cardTitle", "GPS");
+        query.findInBackground(new FindCallback<ParseObject>()
+        {
+            public void done(List<ParseObject> objects, ParseException e)
+            {
+                if (objects != null && objects.size() < 1)
+                {
+                    // this is called
+                    Log.d("InfoCard", "The getFirst request failed. Objects size is less than 1.");
+                }
+                else if (e != null)
+                {
+                    Log.d("InfoCard", "Error: " + e);
+                }
+                else
+                {
+                    String[] cardTextSplit = new String[0];
+                    if (objects != null)
+                    {
+                        cardTextSplit = objects.get(0).getString("cardText").split("\\n");
+                    }
+                    String cardText = "";
+                    for (int i = 0; i < cardTextSplit.length; i++)
+                    {
+                        cardText += cardTextSplit[i];
+                    }
+                    System.out.println(cardText);
+//                    mCardText.setText(cardText);
+                }
+            }
+        });
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_info_card, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.add_button)
+        {
             return true;
         }
 

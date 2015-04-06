@@ -17,4 +17,5 @@
     <dimen name="main_divider_text_left_margin">16dp</dimen>
 
     <dimen name="main_elevation_of_lines">5dp</dimen>
+    <dimen name="card_text_padding">16dp</dimen>
 </resources>
