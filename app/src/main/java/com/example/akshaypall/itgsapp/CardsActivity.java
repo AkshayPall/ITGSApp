@@ -8,22 +8,27 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 
+import com.parse.FindCallback;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseQueryAdapter;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 
 
-public class CardsActivity
-        extends ActionBarActivity
+public class CardsActivity extends ActionBarActivity
 {
-
     public static final String TAG = "CardsActivity";
     private GridView cardsGrid;
-    private ArrayAdapter<Button> cardButtonArrayAdapter;
-    private ArrayList<Button> buttonList = new ArrayList<>();
-    private CardAdapter cardAdapter;
+    ParseQuery<ParseObject> query;
+    ArrayList<ParseObject> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -33,11 +38,51 @@ public class CardsActivity
 
         cardsGrid = (GridView) findViewById(R.id.cards_grid);
 
-//        cardButtonArrayAdapter = new ArrayAdapter<>(this, R.layout.card, R.id.card_list_button, buttonList);
-        cardAdapter = new CardAdapter(buttonList);
-        cardsGrid.setAdapter(cardAdapter);
-//        cardsGrid.setAdapter(cardButtonArrayAdapter);
+        list = new ArrayList<ParseObject>();
 
+        query = ParseQuery.getQuery("CardData");
+        query.whereExists("title"); //to query ALL cards
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> parseObjects, com.parse.ParseException e) {
+                if (e == null){
+                    Log.d("test", ""+parseObjects.size());
+                    list.addAll(parseObjects);
+
+                } else {
+                    Log.d ("Title", "ERROR: "+e.getMessage());
+                }
+            }
+        });
+        cardsGrid.setAdapter(new CardAdapter(list));
+
+        cardsGrid.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int previousFirstItemSeen = 0;
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem > previousFirstItemSeen) {
+                    getSupportActionBar().hide();
+                } else if (firstVisibleItem < previousFirstItemSeen) {
+                    getSupportActionBar().show();
+                }
+                previousFirstItemSeen = firstVisibleItem;
+            }
+        });
+
+        /*cardsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ParseObject objectClicked = list.get(position);
+                Intent intent = new Intent(CardsActivity.this, InfoCard.class);
+                intent.putExtra(InfoCard.EXTRA, objectClicked.getString("text"));
+                startActivity(intent);
+            }
+        });   */
 
     }
 
@@ -57,52 +102,36 @@ public class CardsActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-
-        if (id == R.id.add_button)
-        {
-            Log.d(TAG, "Add pressed!");
-
-            Button button = new Button(this);
-            buttonList.add(button);
-            cardAdapter.notifyDataSetChanged();
-//            cardButtonArrayAdapter.notifyDataSetChanged();
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
-    private class CardAdapter
-            extends ArrayAdapter<Button>
+    private class CardAdapter extends ArrayAdapter<ParseObject>
     {
 
-        CardAdapter(ArrayList<Button> buttons)
+        CardAdapter(ArrayList<ParseObject> objects)
         {
-            super(CardsActivity.this, R.layout.card, R.id.card_list_button, buttons);
+            super(CardsActivity.this, R.layout.card, R.id.card_list_button, objects);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
             convertView = super.getView(position, convertView, parent);
-//            Button button = getItem(position);
-            final Button button = (Button) convertView.findViewById(R.id.card_list_button);
-            button.setWidth(300);
-            button.setHeight(150);
-
-            /* Do the database query here, then set text. */
-            button.setText("Global positioning system");
-            button.setOnClickListener(new View.OnClickListener()
-            {
+            final ParseObject objectShown = getItem(position);
+            Log.d("object Loaded", "title is "+objectShown.getString("title"));
+            Button buttonToEdit = (Button)findViewById(R.id.card_list_button);
+            buttonToEdit.setText("" + objectShown.getString("title"));
+            buttonToEdit.setWidth(150);
+            buttonToEdit.setHeight(80);
+            buttonToEdit.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view)
-                {
-                    Log.d(TAG, "Item clicked");
+                public void onClick(View v) {
                     Intent intent = new Intent(CardsActivity.this, InfoCard.class);
-//                    intent.putExtra(InfoCard.EXTRA, cardsGrid.getItemAtPosition(position).toString());
+                    intent.putExtra(InfoCard.EXTRA, objectShown.getString("text"));
                     startActivity(intent);
                 }
             });
+
 
             return convertView;
         }

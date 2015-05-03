@@ -2,9 +2,4 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.example.akshaypall.itgsapp.InfoCard">
-    <item
-            android:id="@+id/add_button"
-            android:orderInCategory="100"
-            android:title="@string/flip"
-            app:showAsAction="always"/>
 </menu>

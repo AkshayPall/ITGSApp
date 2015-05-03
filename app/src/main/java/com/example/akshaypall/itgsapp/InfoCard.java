@@ -20,6 +20,7 @@ public class InfoCard
 
     public static final String EXTRA = "extra";
     private TextView mCardText;
+    private String mCardTextString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,43 +31,10 @@ public class InfoCard
         Bundle extras = getIntent().getExtras();
         if (extras != null)
         {
-            String title = extras.getString(EXTRA);
+            mCardTextString = extras.getString(EXTRA);
         }
         mCardText = (TextView) findViewById(R.id.card_text);
-
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("FelixTest");
-        query.whereEqualTo("cardTitle", "GPS");
-        query.findInBackground(new FindCallback<ParseObject>()
-        {
-            public void done(List<ParseObject> objects, ParseException e)
-            {
-                if (objects != null && objects.size() < 1)
-                {
-                    // this is called
-                    Log.d("InfoCard", "The getFirst request failed. Objects size is less than 1.");
-                }
-                else if (e != null)
-                {
-                    Log.d("InfoCard", "Error: " + e);
-                }
-                else
-                {
-                    String[] cardTextSplit = new String[0];
-                    if (objects != null)
-                    {
-                        cardTextSplit = objects.get(0).getString("cardText").split("\\n");
-                    }
-                    String cardText = "";
-                    for (int i = 0; i < cardTextSplit.length; i++)
-                    {
-                        cardText += cardTextSplit[i];
-                    }
-                    System.out.println(cardText);
-//                    mCardText.setText(cardText);
-                }
-            }
-        });
+        mCardText.setText(mCardTextString);
     }
 
     @Override
@@ -86,10 +54,6 @@ public class InfoCard
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.add_button)
-        {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
