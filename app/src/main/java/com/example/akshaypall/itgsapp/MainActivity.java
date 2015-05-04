@@ -1,5 +1,6 @@
 package com.example.akshaypall.itgsapp;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
@@ -22,20 +23,26 @@ public class MainActivity extends ActionBarActivity {
 
 
     private ArrayList<String> mItems;
+    private ArrayList<Integer> mCategoryNumbers;
     private ArrayList<String> mColours;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        
+
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, id1, id2);
 
         mItems = new ArrayList<>();
         mColours = new ArrayList<>();
+        mCategoryNumbers = new ArrayList<>();
 
         ParseQuery<ParseObject> query = new ParseQuery<>("CardCategories");
         query.whereExists("category");
         query.whereExists("color");
+        query.whereExists("categoryID");
         query.findInBackground(new FindCallback<ParseObject>()
         {
             @Override
@@ -50,6 +57,7 @@ public class MainActivity extends ActionBarActivity {
                         String color = parseObjects.get(i).getString("color");
                         mItems.add(category);
                         mColours.add("#" + color);
+                        mCategoryNumbers.add(parseObjects.get(i).getInt("categoryID"));
                     }
                 }
                 else
@@ -69,7 +77,27 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
             {
+                Intent i = new Intent(MainActivity.this, CardsActivity.class);
+                i.putExtra("TAG", mCategoryNumbers.get(position));
+                startActivity(i);
+            }
+        });
 
+        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int previousFirstItemSeen = 0;
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem > previousFirstItemSeen) {
+                    getSupportActionBar().hide();
+                } else if (firstVisibleItem < previousFirstItemSeen) {
+                    getSupportActionBar().show();
+                }
+                previousFirstItemSeen = firstVisibleItem;
             }
         });
     }
