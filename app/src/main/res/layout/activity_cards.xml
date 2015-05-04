@@ -1,15 +1,9 @@
-<GridView
+<ListView
         xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="wrap_content"
-        android:id="@+id/cards_grid"
+        android:id="@+id/cards_list"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:numColumns="auto_fit"
-        android:columnWidth="160dp"
-        android:horizontalSpacing="10dp"
-        android:verticalSpacing="10dp"
-        android:stretchMode="columnWidth"
         android:clickable="false"
         android:focusable="false">
 
-</GridView>
+</ListView>
 
