@@ -110,6 +110,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
+            Log.d("getView", "get view method called");
             convertView = super.getView(position, convertView, parent);
 
             String item = getItem(position);
@@ -119,6 +120,8 @@ public class MainActivity extends ActionBarActivity {
 
             ImageView dot = (ImageView) convertView.findViewById(R.id.dot);
             dot.setColorFilter(Color.parseColor(mColours.get(position)));
+
+            Log.d ("convertView", "convertView for text and image");
 
             return convertView;
         }
