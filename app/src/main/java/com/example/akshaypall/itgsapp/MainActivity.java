@@ -30,14 +30,14 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        
+
 
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, id1, id2);
 
-        mItems = new ArrayList<>();
-        mColours = new ArrayList<>();
-        mCategoryNumbers = new ArrayList<>();
+        mItems = new ArrayList<String>();
+        mColours = new ArrayList<String>();
+        mCategoryNumbers = new ArrayList<Integer>();
 
         ParseQuery<ParseObject> query = new ParseQuery<>("CardCategories");
         query.whereExists("category");
@@ -67,10 +67,10 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        ArrayAdapter<String> mAdapter = new ItemAdapter(mItems);
+//        ArrayAdapter<String> mAdapter = new ItemAdapter(mItems);
 //        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, R.layout.item_list_row, R.id.item_text, mItems);
         ListView listview = (ListView) findViewById(R.id.list);
-        listview.setAdapter(mAdapter);
+        listview.setAdapter(new ItemAdapter(mItems));
 
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener()
         {
@@ -102,11 +102,8 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
-    private class ItemAdapter
-            extends ArrayAdapter<String>
-    {
-        ItemAdapter(ArrayList<String> items)
-        {
+    private class ItemAdapter extends ArrayAdapter<String> {
+        ItemAdapter(ArrayList<String> items) {
             super(MainActivity.this, R.layout.item_list_row, R.id.item_text, items);
         }
 
