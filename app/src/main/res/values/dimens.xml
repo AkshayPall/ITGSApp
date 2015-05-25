@@ -22,6 +22,6 @@
     <dimen name="card_text_padding">5dp</dimen>
     <dimen name="dot_size">20dp</dimen>
     <dimen name="dot_padding">4dp</dimen>
-    <dimen name="row_height">72dp</dimen>
+    <dimen name="row_height">56dp</dimen>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.example.akshaypall.itgsapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -13,8 +14,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
@@ -26,9 +31,12 @@ import java.util.List;
 public class CardsActivity extends ActionBarActivity
 {
     public static final String TAG = "CardsActivity";
-    private GridView cardsGrid;
+    private ListView cardsGrid;
+    private ArrayList<String> mColours;
     ParseQuery<ParseObject> query;
-    ArrayList<ParseObject> list;
+    ArrayList<String> mCardText;
+    ArrayList<String> mCardTitle;
+    private int mCategoryNum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,25 +44,37 @@ public class CardsActivity extends ActionBarActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
 
-        cardsGrid = (GridView) findViewById(R.id.cards_grid);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null)
+        {
+            mCategoryNum = extras.getInt("TAG");
+        }
 
-        list = new ArrayList<ParseObject>();
+        cardsGrid = (ListView) findViewById(R.id.cards_list);
+
+        mCardText = new ArrayList<>();
+        mColours = new ArrayList<>();
+        mCardTitle = new ArrayList<>();
 
         query = ParseQuery.getQuery("CardData");
-        query.whereExists("title"); //to query ALL cards
+        query.whereEqualTo("category", mCategoryNum);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, com.parse.ParseException e) {
-                if (e == null){
-                    Log.d("test", ""+parseObjects.size());
-                    list.addAll(parseObjects);
+                if (e == null) {
+                    Log.d("test", "" + parseObjects.size());
+                    for (int i = 0; i < parseObjects.size(); i++) {
+                        mCardText.add(parseObjects.get(i).getString("text"));
+                        mCardTitle.add(parseObjects.get(i).getString("title"));
+                        mColours.add("#" + parseObjects.get(i).getString("colourID"));
+                    }
 
                 } else {
-                    Log.d ("Title", "ERROR: "+e.getMessage());
+                    Log.d("Title", "ERROR: " + e.getMessage());
                 }
             }
         });
-        cardsGrid.setAdapter(new CardAdapter(list));
+        cardsGrid.setAdapter(new CardAdapter(mCardTitle));
 
         cardsGrid.setOnScrollListener(new AbsListView.OnScrollListener() {
             int previousFirstItemSeen = 0;
@@ -74,15 +94,19 @@ public class CardsActivity extends ActionBarActivity
             }
         });
 
-        /*cardsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        cardsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ParseObject objectClicked = list.get(position);
-                Intent intent = new Intent(CardsActivity.this, InfoCard.class);
-                intent.putExtra(InfoCard.EXTRA, objectClicked.getString("text"));
-                startActivity(intent);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l)
+            {
+                Intent i = new Intent(CardsActivity.this, InfoCard.class);
+                Bundle extras = new Bundle();
+                extras.putString("COLOUR", mColours.get(position));
+                extras.putString("TAG1", mCardText.get(position));
+                i.putExtras(extras);
+                startActivity(i);
             }
-        });   */
+        });
 
     }
 
@@ -105,33 +129,25 @@ public class CardsActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private class CardAdapter extends ArrayAdapter<ParseObject>
+    private class CardAdapter extends ArrayAdapter<String>
     {
 
-        CardAdapter(ArrayList<ParseObject> objects)
+        CardAdapter(ArrayList<String> titles)
         {
-            super(CardsActivity.this, R.layout.card, R.id.card_list_button, objects);
+            super(CardsActivity.this, R.layout.item_list_row, R.id.item_text, titles);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent)
         {
             convertView = super.getView(position, convertView, parent);
-            final ParseObject objectShown = getItem(position);
-            Log.d("object Loaded", "title is "+objectShown.getString("title"));
-            Button buttonToEdit = (Button)findViewById(R.id.card_list_button);
-            buttonToEdit.setText("" + objectShown.getString("title"));
-            buttonToEdit.setWidth(150);
-            buttonToEdit.setHeight(80);
-            buttonToEdit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(CardsActivity.this, InfoCard.class);
-                    intent.putExtra(InfoCard.EXTRA, objectShown.getString("text"));
-                    startActivity(intent);
-                }
-            });
+            String currentTitle = getItem(position);
 
+            TextView titleOfCard = (TextView)findViewById(R.id.item_text);
+            titleOfCard.setText(currentTitle);
+
+            ImageView dot = (ImageView) convertView.findViewById(R.id.dot);
+            dot.setColorFilter(Color.parseColor(mColours.get(position)));
 
             return convertView;
         }

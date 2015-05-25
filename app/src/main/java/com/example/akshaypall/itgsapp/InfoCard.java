@@ -1,5 +1,6 @@
 package com.example.akshaypall.itgsapp;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -18,8 +19,8 @@ public class InfoCard
         extends ActionBarActivity
 {
 
-    public static final String EXTRA = "extra";
     private TextView mCardText;
+    private String mColour;
     private String mCardTextString;
 
     @Override
@@ -31,10 +32,12 @@ public class InfoCard
         Bundle extras = getIntent().getExtras();
         if (extras != null)
         {
-            mCardTextString = extras.getString(EXTRA);
+            mCardTextString = extras.getString("TAG1");
+            mColour = extras.getString("COLOUR");
         }
         mCardText = (TextView) findViewById(R.id.card_text);
         mCardText.setText(mCardTextString);
+        mCardText.setBackgroundColor(Color.parseColor(mColour));
     }
 
     @Override
