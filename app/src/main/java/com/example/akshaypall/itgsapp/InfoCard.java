@@ -24,6 +24,7 @@ public class InfoCard
     private TextView mCardText;
     private String mColour;
     private String mCardTextString;
+    public String mCardTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,10 +37,12 @@ public class InfoCard
         {
             mCardTextString = extras.getString("TAG1");
             mColour = extras.getString("COLOUR");
+            mCardTitle = extras.getString("TITLE");
         }
         mCardText = (TextView) findViewById(R.id.card_text);
         mCardText.setText(mCardTextString);
         mCardText.setBackgroundColor(Color.parseColor(mColour));
+        getSupportActionBar().setTitle(mCardTitle);
     }
 
     @Override

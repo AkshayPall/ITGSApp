@@ -52,6 +52,7 @@ public class CardsActivity extends ActionBarActivity
         setContentView(R.layout.activity_cards);
 
         cardsGrid = (ListView) findViewById(R.id.cards_list);
+        cardsGrid.setFastScrollEnabled(true);
 
         mCardText = new ArrayList<>();
         mColours = new ArrayList<>();
@@ -98,6 +99,7 @@ public class CardsActivity extends ActionBarActivity
                             Bundle extras = new Bundle();
                             extras.putString("COLOUR", mColours.get(position));
                             extras.putString("TAG1", mCardText.get(position));
+                            extras.putString("TITLE", mCardTitle.get(position));
                             i.putExtras(extras);
                             startActivity(i);
                         }
