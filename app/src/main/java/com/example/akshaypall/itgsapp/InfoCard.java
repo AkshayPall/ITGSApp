@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -38,6 +40,13 @@ public class InfoCard
         mCardText = (TextView) findViewById(R.id.card_text);
         mCardText.setText(mCardTextString);
         mCardText.setBackgroundColor(Color.parseColor(mColour));
+    }
+
+    @Override
+    protected void onDestroy() {
+        Toast exitToast = Toast.makeText(InfoCard.this, "Loading...", Toast.LENGTH_SHORT);
+        exitToast.show();
+        super.onDestroy();
     }
 
     @Override

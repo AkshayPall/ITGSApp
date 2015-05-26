@@ -17,11 +17,15 @@
     <dimen name="main_divider_text_below_margin">8dp</dimen>
     <dimen name="main_divider_text_left_margin">16dp</dimen>
 
+    <dimen name="category_divider_top_margin">8dp</dimen>
+    <dimen name="category_divider_bottom_margin">4dp</dimen>
+
     <dimen name="main_elevation_of_lines">5dp</dimen>
 
     <dimen name="card_text_padding">5dp</dimen>
     <dimen name="dot_size">25dp</dimen>
     <dimen name="dot_padding">4dp</dimen>
     <dimen name="row_height">56dp</dimen>
+    <dimen name="static_title_row_padding">20dp</dimen>
 
 </resources>

@@ -22,6 +22,9 @@
         Vestibulum congue, nisi sed eleifend sodales, enim nisl aliquet erat, id placerat metus lorem nec erat. Aenean
         mattis dui neque, non efficitur quam sagittis ut.
     </string>
+    <string name="headingOne">Categories</string>
+    <string name="headingSEI">SEIs</string>
+    <string name="placeholder">placeholder</string>
 
 
 </resources>

@@ -1,6 +1,7 @@
 package com.example.akshaypall.itgsapp;
 
 import android.app.ActionBar;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -11,10 +12,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.parse.*;
 
 import java.util.ArrayList;
@@ -28,10 +32,10 @@ public class MainActivity
     private ArrayList<String> mItems;
     private ArrayList<String> mColours;
     private ArrayList<String> mSEIs;
-    private ParseQuery<ParseObject> seiQuery;
+    private int[] mSEIIds;
     private ListView listview;
-    String mApplicationId = "rTri7QJ6iN2uiL45LdS2im9ox2kMY1BJRBBRET8x";
-    String mClientKey = "t1vVIFA4WwsjxBLYje3ldEFtCluCDKkfdLH1ojPO";
+    private ListView SEIListview;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -45,7 +49,7 @@ public class MainActivity
         mColours = new ArrayList<>();
         mSEIs = new ArrayList<>();
 
-        seiQuery = ParseQuery.getQuery("SEI");
+        ParseQuery<ParseObject> seiQuery = ParseQuery.getQuery("SEI");
         seiQuery.whereExists("title");
         seiQuery.orderByAscending("SEIid");
         seiQuery.findInBackground(new FindCallback<ParseObject>()
@@ -55,13 +59,35 @@ public class MainActivity
             {
                 if (e == null)
                 {
+                    mSEIIds = new int[parseObjects.size()];
                     Log.d("category", "Retrieved " + parseObjects.size() + " parseObjects");
                     for (int i = 0; i < parseObjects.size(); i++)
                     {
                         String sei = parseObjects.get(i).getString("title");
                         mSEIs.add(sei);
+                        int id = parseObjects.get(i).getInt("SEIid");
+                        mSEIIds[i]=id;
+                        Log.d("SEI ids", "id passed is "+id);
                     }
                     System.out.println("PARSE SEI QUERY DONE");
+                    final ArrayAdapter<String> mAdapter = new SEIItemAdapter(mSEIs);
+                    SEIListview = (ListView)findViewById(R.id.sei_list);
+                    SEIListview.setAdapter(mAdapter);
+                    SEIListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Toast toast = Toast.makeText(MainActivity.this, mSEIs.get(position) + " selected", Toast.LENGTH_SHORT);
+                            toast.show();
+                            int seiIdToPass = mSEIIds[position];
+                            Log.d("passed ID", "here: "+seiIdToPass);
+                            Intent i = new Intent(MainActivity.this, CardsActivity.class);
+                            Bundle extras = new Bundle();
+                            extras.putBoolean(CardsActivity.INTENT_PASS_CATEGORY, false);
+                            extras.putInt(CardsActivity.TAG, seiIdToPass);
+                            i.putExtras(extras);
+                            startActivity(i);
+                        }
+                    });
                 }
                 else
                 {
@@ -74,83 +100,49 @@ public class MainActivity
         ParseQuery<ParseObject> categoryQuery = ParseQuery.getQuery("CardCategories");
         categoryQuery.whereExists("category");
         categoryQuery.whereExists("color");
-        categoryQuery.findInBackground(new FindCallback<ParseObject>()
-        {
+        categoryQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> parseObjects, ParseException e)
-            {
-                if (e == null)
-                {
+            public void done(List<ParseObject> parseObjects, ParseException e) {
+                if (e == null) {
                     Log.d("category", "Retrieved " + parseObjects.size() + " parseObjects");
-                    for (int i = 0; i < parseObjects.size(); i++)
-                    {
+                    for (int i = 0; i < parseObjects.size(); i++) {
                         Log.d("Array loading", "Array loading... index " + i);
-                        if (i == parseObjects.size() - 1) Log.d("Array loading", "Array loading... done");
+                        if (i == parseObjects.size() - 1)
+                            Log.d("Array loading", "Array loading... done");
 
                         String category = parseObjects.get(i).getString("category");
                         String color = parseObjects.get(i).getString("color");
                         mItems.add(category);
                         mColours.add("#" + color);
                     }
-                    adjustDataArrays();
+                    //adjustDataArrays();
                     /* Temporary cheat method simulating the "loading" animation. This gives time for both queries to finish */
                     loadingData();
-                }
-                else
-                {
+                } else {
                     Log.d("category", "*Error*: " + e.getMessage());
                 }
             }
 
-            private void loadingData()
-            {
-                new CountDownTimer(2000, 1000)
-                {
+            private void loadingData() {
+                //mItems.addAll(mItems.size(), mSEIs);
+                final ArrayAdapter<String> mAdapter = new ItemAdapter(mItems);
+                listview = (ListView) findViewById(R.id.list);
+                listview.setAdapter(mAdapter);
+                listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
-                    public void onTick(long l)
-                    {
-                        Log.d("loading", "Loading... Tick tock");
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Toast toast = Toast.makeText(MainActivity.this, mItems.get(position) + " selected", Toast.LENGTH_SHORT);
+                        toast.show();
+                        String colourOfCard = mColours.get(position);
+                        Intent i = new Intent(MainActivity.this, CardsActivity.class);
+                        i.putExtra(CardsActivity.INTENT_PASS_CATEGORY, true);
+                        i.putExtra(CardsActivity.TAG, colourOfCard);
+                        startActivity(i);
                     }
-
-                    @Override
-                    public void onFinish()
-                    {
-
-                        mItems.addAll(mItems.size(), mSEIs);
-                        ArrayAdapter<String> mAdapter = new ItemAdapter(mItems);
-                        listview = (ListView) findViewById(R.id.list);
-                        listview.setAdapter(mAdapter);
-                        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
-                            int previousFirstItemSeen = 0;
-
-                            @Override
-                            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                            }
-
-                            @Override
-                            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                                if (firstVisibleItem > previousFirstItemSeen) {
-                                    try {
-                                        getSupportActionBar().hide();
-                                    } catch (Exception e) {
-                                        Log.d("Scroll Action Bar", "Error hiding actionbar");
-                                    }
-                                } else if (firstVisibleItem < previousFirstItemSeen) {
-                                    try {
-                                        getSupportActionBar().show();
-                                    } catch (Exception e) {
-                                        Log.d("Scroll Action Bar", "Error showing actionbar");
-                                    }
-                                }
-                                previousFirstItemSeen = firstVisibleItem;
-                            }
-                        });
-                    }
-                }.start();
+                });
             }
 
-            /* For categories All, Color, and SEI */
+            /* For categories All, Color, and SEI TODO: delete this method, once both lists are working
             private void adjustDataArrays()
             {
                 mItems.add(0, "All");
@@ -159,7 +151,7 @@ public class MainActivity
                 mColours.add(0, "#ffffff");
                 mColours.add(1, "#ffffff");
                 mColours.add(12, "#ffffff");
-            }
+            }*/
         });
         System.out.println("PARSE QUERY EXITED");
     }
@@ -186,29 +178,33 @@ public class MainActivity
             ImageView dot = (ImageView) convertView.findViewById(R.id.dot);
 
             nameTextView.setText(item);
-            if (position < mColours.size())
+            dot.setColorFilter(Color.parseColor(mColours.get(position)));
+
+            Log.d("getView", "get view called and finished");
+            return convertView;
+        }
+    }
+
+    private class SEIItemAdapter
+            extends ArrayAdapter<String>
+    {
+        SEIItemAdapter(ArrayList<String> items)
+        {
+            super(MainActivity.this, R.layout.sei_list_row, R.id.sei_list_row_title, items);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            if (convertView == null)
             {
-                dot.setColorFilter(Color.parseColor(mColours.get(position)));
-            }
-            else
-            {
-                dot.setColorFilter(Color.WHITE);
+                convertView = super.getView(position, convertView, parent);
             }
 
+            String item = getItem(position);
+            TextView nameTextView = (TextView) convertView.findViewById(R.id.sei_list_row_title);
+            nameTextView.setText(item);
 
-            /* TODO: Add category separators later
-
-            if (item.equals("ALL") || item.equals("COLOR") || item.equals("SOCIAL AND ETHICAL ISSUES"))
-            {
-                dot.setColorFilter(Color.LTGRAY);
-                convertView.setBackgroundColor(Color.LTGRAY);
-            }
-            else
-            {
-//                dot.setColorFilter(Color.parseColor(mColours.get(position)));
-            }
-
-            */
             Log.d("getView", "get view called and finished");
             return convertView;
         }
