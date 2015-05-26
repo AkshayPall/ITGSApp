@@ -2,6 +2,7 @@ package com.example.akshaypall.itgsapp;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +25,10 @@ public class MainActivity
 
     private ArrayList<String> mItems;
     private ArrayList<String> mColours;
+    private ArrayList<String> mSEIs;
+    private ParseQuery<ParseObject> seiQuery;
+    private ListView listview;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,11 +40,38 @@ public class MainActivity
 
         mItems = new ArrayList<>();
         mColours = new ArrayList<>();
+        mSEIs = new ArrayList<>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("CardCategories");
-        query.whereExists("category");
-        query.whereExists("color");
-        query.findInBackground(new FindCallback<ParseObject>()
+        seiQuery = ParseQuery.getQuery("SEI");
+        seiQuery.whereExists("title");
+        seiQuery.orderByAscending("SEIid");
+        seiQuery.findInBackground(new FindCallback<ParseObject>()
+        {
+            @Override
+            public void done(List<ParseObject> parseObjects, ParseException e)
+            {
+                if (e == null)
+                {
+                    Log.d("category", "Retrieved " + parseObjects.size() + " parseObjects");
+                    for (int i = 0; i < parseObjects.size(); i++)
+                    {
+                        String sei = parseObjects.get(i).getString("title");
+                        mSEIs.add(sei);
+                    }
+                    System.out.println("PARSE SEI QUERY DONE");
+                }
+                else
+                {
+                    Log.d("error", "Error: " + e);
+                }
+            }
+        });
+
+
+        ParseQuery<ParseObject> categoryQuery = ParseQuery.getQuery("CardCategories");
+        categoryQuery.whereExists("category");
+        categoryQuery.whereExists("color");
+        categoryQuery.findInBackground(new FindCallback<ParseObject>()
         {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e)
@@ -54,21 +86,50 @@ public class MainActivity
 
                         String category = parseObjects.get(i).getString("category");
                         String color = parseObjects.get(i).getString("color");
-//                        Log.d("Array loading", category + "");
-//                        Log.d("Array loading", color + "");
                         mItems.add(category);
                         mColours.add("#" + color);
                     }
-                    System.out.println("PARSE QUERY DONE");
-                    ArrayAdapter<String> mAdapter = new ItemAdapter(mItems);
-                    //        ArrayAdapter<String> mAdapter = new ArrayAdapter<>(this, R.layout.item_list_row, R.id.item_text, mItems);
-                    ListView listview = (ListView) findViewById(R.id.list);
-                    listview.setAdapter(mAdapter);
+                    adjustDataArrays();
+                    /* Temporary cheat method simulating the "loading" animation. This gives time for both queries to finish */
+                    loadingData();
                 }
                 else
                 {
                     Log.d("category", "*Error*: " + e.getMessage());
                 }
+            }
+
+            private void loadingData()
+            {
+                new CountDownTimer(2000, 1000)
+                {
+                    @Override
+                    public void onTick(long l)
+                    {
+                        Log.d("loading", "Loading... Tick tock");
+                    }
+
+                    @Override
+                    public void onFinish()
+                    {
+
+                        mItems.addAll(mItems.size(), mSEIs);
+                        ArrayAdapter<String> mAdapter = new ItemAdapter(mItems);
+                        listview = (ListView) findViewById(R.id.list);
+                        listview.setAdapter(mAdapter);
+                    }
+                }.start();
+            }
+
+            /* For categories All, Color, and SEI */
+            private void adjustDataArrays()
+            {
+                mItems.add(0, "All");
+                mItems.add(1, "COLOR");
+                mItems.add(12, "SOCIAL AND ETHICAL ISSUES");
+                mColours.add(0, "#ffffff");
+                mColours.add(1, "#ffffff");
+                mColours.add(12, "#ffffff");
             }
         });
         System.out.println("PARSE QUERY EXITED");
@@ -78,10 +139,6 @@ public class MainActivity
     private class ItemAdapter
             extends ArrayAdapter<String>
     {
-
-        /*LayoutInflater inflater = (LayoutInflater) (MainActivity.this).getSystemService
-                (Context.LAYOUT_INFLATER_SERVICE);*/
-
         ItemAdapter(ArrayList<String> items)
         {
             super(MainActivity.this, R.layout.item_list_row, R.id.item_text, items);
@@ -92,20 +149,38 @@ public class MainActivity
         {
             if (convertView == null)
             {
-//                convertView = inflater.inflate(R.layout.activity_main, parent, false);
                 convertView = super.getView(position, convertView, parent);
-                Log.d("getView", "get view called");
             }
 
             String item = getItem(position);
-
             TextView nameTextView = (TextView) convertView.findViewById(R.id.item_text);
-            nameTextView.setText(item);
-
             ImageView dot = (ImageView) convertView.findViewById(R.id.dot);
-            dot.setColorFilter(Color.parseColor(mColours.get(position)));
 
-            Log.d("getView", "get view finished");
+            nameTextView.setText(item);
+            if (position < mColours.size())
+            {
+                dot.setColorFilter(Color.parseColor(mColours.get(position)));
+            }
+            else
+            {
+                dot.setColorFilter(Color.WHITE);
+            }
+
+
+            /* TODO: Add category separators later
+
+            if (item.equals("ALL") || item.equals("COLOR") || item.equals("SOCIAL AND ETHICAL ISSUES"))
+            {
+                dot.setColorFilter(Color.LTGRAY);
+                convertView.setBackgroundColor(Color.LTGRAY);
+            }
+            else
+            {
+//                dot.setColorFilter(Color.parseColor(mColours.get(position)));
+            }
+
+            */
+            Log.d("getView", "get view called and finished");
             return convertView;
         }
     }

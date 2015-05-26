@@ -20,7 +20,7 @@
     <dimen name="main_elevation_of_lines">5dp</dimen>
 
     <dimen name="card_text_padding">5dp</dimen>
-    <dimen name="dot_size">20dp</dimen>
+    <dimen name="dot_size">25dp</dimen>
     <dimen name="dot_padding">4dp</dimen>
     <dimen name="row_height">56dp</dimen>
 
