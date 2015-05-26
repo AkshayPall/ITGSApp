@@ -44,14 +44,9 @@ public class InfoCard
         }
         mCardText = (TextView) findViewById(R.id.card_text);
         mCardText.setText(mCardTextString);
-<<<<<<< HEAD
-        mCardText.setBackgroundColor(Color.parseColor(mColour));
         getSupportActionBar().setTitle(mCardTitle);
-=======
         Drawable background = mCardText.getBackground();
         background.setColorFilter(Color.parseColor(mColour), PorterDuff.Mode.SRC_OVER);
-
->>>>>>> origin/master
     }
 
     @Override
