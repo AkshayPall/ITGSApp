@@ -1,6 +1,9 @@
 package com.example.akshaypall.itgsapp;
 
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -39,7 +42,9 @@ public class InfoCard
         }
         mCardText = (TextView) findViewById(R.id.card_text);
         mCardText.setText(mCardTextString);
-        mCardText.setBackgroundColor(Color.parseColor(mColour));
+        Drawable background = mCardText.getBackground();
+        background.setColorFilter(Color.parseColor(mColour), PorterDuff.Mode.SRC_OVER);
+
     }
 
     @Override
