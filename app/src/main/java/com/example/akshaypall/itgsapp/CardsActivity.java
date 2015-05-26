@@ -26,6 +26,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseQueryAdapter;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -42,7 +43,6 @@ public class CardsActivity extends ActionBarActivity
     ArrayList<String> mCardTitle;
     private String mCategoryColourForQuery;
     private int mSEIIdNumberForQuery;
-    private ArrayList<Integer> mCardNumberArray;
     private CardAdapter mAdapter;
 
     @Override
@@ -70,21 +70,9 @@ public class CardsActivity extends ActionBarActivity
             //for SEIid TODO: have to query cardNumbers from CardSEIs data, then query cards from CardsData
             mSEIIdNumberForQuery = extras.getInt(TAG);
             Log.d("ID was passed: ", ""+mSEIIdNumberForQuery);
-            ParseQuery<ParseObject> seiCardNumQuery = ParseQuery.getQuery("CardsSEIs");
+            final ParseQuery<ParseObject> seiCardNumQuery = ParseQuery.getQuery("CardsSEIs");
             seiCardNumQuery.whereEqualTo("SEI", mSEIIdNumberForQuery);
-            seiCardNumQuery.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> list, com.parse.ParseException e) {
-                    if (e == null) {
-                        for (int i = 0; i < list.size(); i++) {
-                            mCardNumberArray.add(list.get(i).getInt("card"));
-                        }
-                        query.whereContainedIn("cardId", mCardNumberArray);
-                    } else {
-                        Log.d("Title", "ERROR: " + e.getMessage());
-                    }
-                }
-            });
+            query.whereMatchesKeyInQuery("cardId", "card", seiCardNumQuery);
         }
 
         query.findInBackground(new FindCallback<ParseObject>() {
