@@ -36,7 +36,6 @@ public class MainActivity
     private ListView listview;
     private ListView SEIListview;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
