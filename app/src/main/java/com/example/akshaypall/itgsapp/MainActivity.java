@@ -49,6 +49,15 @@ public class MainActivity
         mColours = new ArrayList<>();
         mSEIs = new ArrayList<>();
 
+        TextView allButtonText = (TextView)findViewById(R.id.all_title_row);
+        allButtonText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, CardsActivity.class);
+                startActivity(i);
+            }
+        });
+
         ParseQuery<ParseObject> seiQuery = ParseQuery.getQuery("SEI");
         seiQuery.whereExists("title");
         seiQuery.orderByAscending("SEIid");

@@ -60,13 +60,16 @@ public class CardsActivity extends ActionBarActivity
         query = ParseQuery.getQuery("CardData");
 
         Bundle extras = getIntent().getExtras();
-        if (extras.getBoolean(INTENT_PASS_CATEGORY)) {
+        if (extras == null) {
+            //NOTHING
+        }
+        else if (extras.getBoolean(INTENT_PASS_CATEGORY)) {
             //for categories here TODO: populate list wit categories
             mCategoryColourForQuery = extras.getString(TAG);
             query.whereEqualTo("colourID", mCategoryColourForQuery.substring(1));
 
 
-        } else {
+        } else  {
             //for SEIid TODO: have to query cardNumbers from CardSEIs data, then query cards from CardsData
             mSEIIdNumberForQuery = extras.getInt(TAG);
             Log.d("ID was passed: ", ""+mSEIIdNumberForQuery);
