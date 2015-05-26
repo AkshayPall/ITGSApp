@@ -1,5 +1,6 @@
 package com.example.akshaypall.itgsapp;
 
+import android.app.ActionBar;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -28,7 +30,8 @@ public class MainActivity
     private ArrayList<String> mSEIs;
     private ParseQuery<ParseObject> seiQuery;
     private ListView listview;
-
+    String mApplicationId = "rTri7QJ6iN2uiL45LdS2im9ox2kMY1BJRBBRET8x";
+    String mClientKey = "t1vVIFA4WwsjxBLYje3ldEFtCluCDKkfdLH1ojPO";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,7 +39,7 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Parse.enableLocalDatastore(this);
-        Parse.initialize(this, null, null);
+        Parse.initialize(this, mApplicationId, mClientKey);
 
         mItems = new ArrayList<>();
         mColours = new ArrayList<>();
@@ -117,6 +120,32 @@ public class MainActivity
                         ArrayAdapter<String> mAdapter = new ItemAdapter(mItems);
                         listview = (ListView) findViewById(R.id.list);
                         listview.setAdapter(mAdapter);
+                        listview.setOnScrollListener(new AbsListView.OnScrollListener() {
+                            int previousFirstItemSeen = 0;
+
+                            @Override
+                            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+                            }
+
+                            @Override
+                            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                                if (firstVisibleItem > previousFirstItemSeen) {
+                                    try {
+                                        getSupportActionBar().hide();
+                                    } catch (Exception e) {
+                                        Log.d("Scroll Action Bar", "Error hiding actionbar");
+                                    }
+                                } else if (firstVisibleItem < previousFirstItemSeen) {
+                                    try {
+                                        getSupportActionBar().show();
+                                    } catch (Exception e) {
+                                        Log.d("Scroll Action Bar", "Error showing actionbar");
+                                    }
+                                }
+                                previousFirstItemSeen = firstVisibleItem;
+                            }
+                        });
                     }
                 }.start();
             }
