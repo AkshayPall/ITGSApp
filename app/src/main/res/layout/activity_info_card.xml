@@ -3,10 +3,14 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:paddingBottom="8dp"
-              android:paddingLeft="8dp"
-              android:paddingRight="8dp"
-              android:paddingTop="8dp"
+              android:orientation="vertical"
               tools:context="com.example.akshaypall.itgsapp.InfoCard">
+
+    <View
+            android:id="@+id/color_identifier"
+            android:layout_width="match_parent" android:layout_height="10dp"
+            android:background="@android:color/holo_red_dark"
+            />
 
     <TextView
             android:id="@+id/card_text"
@@ -16,9 +20,9 @@
             android:padding="@dimen/card_text_padding"
             android:gravity="center_vertical"
             android:layout_gravity="center"
-            android:background="@drawable/rounded_corner"
+
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             />
+
 </LinearLayout>

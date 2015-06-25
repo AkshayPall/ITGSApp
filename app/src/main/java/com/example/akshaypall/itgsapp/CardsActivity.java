@@ -19,11 +19,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.parse.FindCallback;
-import com.parse.Parse;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseQueryAdapter;
+import com.parse.*;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +41,7 @@ public class CardsActivity extends ActionBarActivity
     private String mCategoryColourForQuery;
     private int mSEIIdNumberForQuery;
     private CardAdapter mAdapter;
-
+    private String TITLE_PIN_LABEL = "Titles";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -79,9 +76,10 @@ public class CardsActivity extends ActionBarActivity
             query.whereMatchesKeyInQuery("cardId", "card", seiCardNumQuery);
         }
 
+        query.fromLocalDatastore();
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> parseObjects, com.parse.ParseException e) {
+            public void done(final List<ParseObject> parseObjects, com.parse.ParseException e) {
                 if (e == null) {
                     Log.d("test", "" + parseObjects.size());
                     for (int i = 0; i < parseObjects.size(); i++) {
@@ -108,6 +106,20 @@ public class CardsActivity extends ActionBarActivity
                 } else {
                     Log.d("Title", "ERROR: " + e.getMessage());
                 }
+                ParseObject.unpinAllInBackground(TITLE_PIN_LABEL, parseObjects, new DeleteCallback()
+                {
+                    public void done(com.parse.ParseException e)
+                    {
+                        if (e != null)
+                        {
+                            Log.d("SEI query", "SEI unpinning error " + e);
+                            return;
+                        }
+
+                        // Add the latest results for this query to the cache.
+                        ParseObject.pinAllInBackground(TITLE_PIN_LABEL, parseObjects);
+                    }
+                });
             }
 
         });

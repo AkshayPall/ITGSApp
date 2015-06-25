@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +35,7 @@ public class InfoCard
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info_card);
-
+        View colorBar = findViewById(R.id.color_identifier);
         Bundle extras = getIntent().getExtras();
         if (extras != null)
         {
@@ -45,8 +46,11 @@ public class InfoCard
         mCardText = (TextView) findViewById(R.id.card_text);
         mCardText.setText(mCardTextString);
         getSupportActionBar().setTitle(mCardTitle);
-        Drawable background = mCardText.getBackground();
-        background.setColorFilter(Color.parseColor(mColour), PorterDuff.Mode.SRC_OVER);
+        System.out.println(mColour + " is color");
+        colorBar.setBackgroundColor(Color.parseColor(mColour));
+//        Drawable background = mCardText.getBackground();
+//        background.setColorFilter(Color.parseColor(mColour), PorterDuff.Mode.SRC_OVER);
+
     }
 
     @Override
