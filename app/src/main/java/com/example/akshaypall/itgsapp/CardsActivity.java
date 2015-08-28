@@ -1,7 +1,10 @@
 package com.example.akshaypall.itgsapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -9,11 +12,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,66 +21,80 @@ import android.widget.Toast;
 
 import com.parse.*;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
-public class CardsActivity extends ActionBarActivity
-{
+public class CardsActivity extends ActionBarActivity {
     public static final String TAG = "CardsActivity";
     public static final String INTENT_PASS_CATEGORY = "isCategory";
 
 
-    private ListView cardsGrid;
+    private ListView mCardsGrid;
     private ArrayList<String> mColours;
-    ParseQuery<ParseObject> query;
+    ParseQuery<ParseObject> mQuery;
     ArrayList<String> mCardText;
     ArrayList<String> mCardTitle;
     private String mCategoryColourForQuery;
     private int mSEIIdNumberForQuery;
     private CardAdapter mAdapter;
-    private String TITLE_PIN_LABEL = "Titles";
+    private static final String TITLE_PIN_LABEL = "Titles";
+
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
 
-        cardsGrid = (ListView) findViewById(R.id.cards_list);
-        cardsGrid.setFastScrollEnabled(true);
+        mCardsGrid = (ListView) findViewById(R.id.cards_list);
+        mCardsGrid.setFastScrollEnabled(true);
 
         mCardText = new ArrayList<>();
         mColours = new ArrayList<>();
         mCardTitle = new ArrayList<>();
 
-        query = ParseQuery.getQuery("CardData");
+        mQuery = ParseQuery.getQuery("CardData");
 
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
             //NOTHING
-        }
-        else if (extras.getBoolean(INTENT_PASS_CATEGORY)) {
+        } else if (extras.getBoolean(INTENT_PASS_CATEGORY)) {
             //for categories here TODO: populate list wit categories
             mCategoryColourForQuery = extras.getString(TAG);
-            query.whereEqualTo("colourID", mCategoryColourForQuery.substring(1));
-
-
-        } else  {
+            mQuery.whereEqualTo("colourID", mCategoryColourForQuery.substring(1));
+        } else {
             //for SEIid TODO: have to query cardNumbers from CardSEIs data, then query cards from CardsData
             mSEIIdNumberForQuery = extras.getInt(TAG);
-            Log.d("ID was passed: ", ""+mSEIIdNumberForQuery);
+            Log.d("ID was passed: ", "" + mSEIIdNumberForQuery);
             final ParseQuery<ParseObject> seiCardNumQuery = ParseQuery.getQuery("CardsSEIs");
             seiCardNumQuery.whereEqualTo("SEI", mSEIIdNumberForQuery);
-            query.whereMatchesKeyInQuery("cardId", "card", seiCardNumQuery);
+            mQuery.whereMatchesKeyInQuery("cardId", "card", seiCardNumQuery);
         }
 
-        query.fromLocalDatastore();
-        query.findInBackground(new FindCallback<ParseObject>() {
+        if (isConnected()) {
+            cardsActivityQuery();
+        } else{
+            mQuery.fromLocalDatastore();
+            cardsActivityQuery();
+        }
+    }
+
+    private void cardsActivityQuery() {
+        mQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(final List<ParseObject> parseObjects, com.parse.ParseException e) {
+            public void done(final List<ParseObject> parseObjects, ParseException e) {
                 if (e == null) {
+                    ParseObject.unpinAllInBackground(TITLE_PIN_LABEL, parseObjects, new DeleteCallback() {
+                        public void done(ParseException e) {
+                            if (e != null) {
+                                Log.d("SEI query", "SEI unpinning error " + e);
+                                return;
+                            }
+                            // Add the latest results for this query to the cache.
+                            ParseObject.pinAllInBackground(TITLE_PIN_LABEL, parseObjects);
+                        }
+                    });
+
                     Log.d("test", "" + parseObjects.size());
                     for (int i = 0; i < parseObjects.size(); i++) {
                         mCardText.add(parseObjects.get(i).getString("text"));
@@ -89,8 +103,8 @@ public class CardsActivity extends ActionBarActivity
                         Log.d("CARD INFO", mCardTitle.get(i) + "----" + mCardText.get(i));
                     }
                     mAdapter = new CardAdapter(mCardTitle);
-                    cardsGrid.setAdapter(mAdapter);
-                    cardsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    mCardsGrid.setAdapter(mAdapter);
+                    mCardsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                             Intent i = new Intent(CardsActivity.this, InfoCard.class);
@@ -106,23 +120,17 @@ public class CardsActivity extends ActionBarActivity
                 } else {
                     Log.d("Title", "ERROR: " + e.getMessage());
                 }
-                ParseObject.unpinAllInBackground(TITLE_PIN_LABEL, parseObjects, new DeleteCallback()
-                {
-                    public void done(com.parse.ParseException e)
-                    {
-                        if (e != null)
-                        {
-                            Log.d("SEI query", "SEI unpinning error " + e);
-                            return;
-                        }
-
-                        // Add the latest results for this query to the cache.
-                        ParseObject.pinAllInBackground(TITLE_PIN_LABEL, parseObjects);
-                    }
-                });
             }
-
         });
+    }
+
+    private boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean connected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+
+        return connected;
     }
 
     @Override
@@ -134,16 +142,14 @@ public class CardsActivity extends ActionBarActivity
 
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
+    public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_cards, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up addButton, so long
         // as you specify a parent activity in AndroidManifest.xml.
@@ -153,18 +159,14 @@ public class CardsActivity extends ActionBarActivity
     }
 
     private class CardAdapter
-            extends ArrayAdapter<String>
-    {
-        CardAdapter(ArrayList<String> items)
-        {
+            extends ArrayAdapter<String> {
+        CardAdapter(ArrayList<String> items) {
             super(CardsActivity.this, R.layout.item_list_row, R.id.item_text, items);
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            if (convertView == null)
-            {
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
                 convertView = super.getView(position, convertView, parent);
             }
 
