@@ -40,6 +40,7 @@ public class CardsActivity extends ActionBarActivity {
     private int mSEIIdNumberForQuery;
     private CardAdapter mAdapter;
     private static final String TITLE_PIN_LABEL = "Titles";
+    private static final String CARD_NUMBER_PIN_LABEL = "Titles";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,23 @@ public class CardsActivity extends ActionBarActivity {
             Log.d("ID was passed: ", "" + mSEIIdNumberForQuery);
             final ParseQuery<ParseObject> seiCardNumQuery = ParseQuery.getQuery("CardsSEIs");
             seiCardNumQuery.whereEqualTo("SEI", mSEIIdNumberForQuery);
+            seiCardNumQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(final List<ParseObject> parseObjects, ParseException e) {
+                    if (e == null){
+                        ParseObject.unpinAllInBackground(CARD_NUMBER_PIN_LABEL, parseObjects, new DeleteCallback() {
+                            public void done(ParseException e) {
+                                if (e != null) {
+                                    Log.d("SEI query", "SEI unpinning error " + e);
+                                    return;
+                                }
+                                // Add the latest results for this query to the cache.
+                                ParseObject.pinAllInBackground(CARD_NUMBER_PIN_LABEL, parseObjects);
+                            }
+                        });
+                    }
+                }
+            });
             mQuery.whereMatchesKeyInQuery("cardId", "card", seiCardNumQuery);
         }
 
