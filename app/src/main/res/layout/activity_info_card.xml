@@ -2,27 +2,20 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:paddingBottom="8dp"
               android:orientation="vertical"
+              android:paddingBottom="8dp"
               tools:context="com.example.akshaypall.itgsapp.InfoCard">
 
-    <View
-            android:id="@+id/color_identifier"
-            android:layout_width="match_parent" android:layout_height="10dp"
-            android:background="@android:color/holo_red_dark"
-            />
-
     <TextView
-            android:id="@+id/card_text"
-            android:text="@string/lorem_ipsum"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:textIsSelectable="true"
-            android:padding="@dimen/card_text_padding"
-            android:gravity="center_vertical"
-            android:layout_gravity="center"
+        android:id="@+id/card_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
+        android:padding="@dimen/card_text_padding"
+        android:text="@string/lorem_ipsum"
 
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textIsSelectable="true"/>
 
 </LinearLayout>
