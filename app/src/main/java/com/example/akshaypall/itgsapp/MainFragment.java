@@ -1,6 +1,7 @@
 package com.example.akshaypall.itgsapp;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -46,6 +47,7 @@ public class MainFragment extends Fragment {
     private ListView mSEIListview;
     private static final String SEI_PIN_LABEL = "SEIs";
     private static final String CATEGORY_PIN_LABEL = "Categories";
+    private Contract mContract;
 
     private String mApplicationID = "";
     private String mClientKey = "";
@@ -85,9 +87,9 @@ public class MainFragment extends Fragment {
                 .orderByAscending("SEIid");
         //if user has a network connection, the information updates from parse database,
         //otherwise it checks what is already stored.
-        if (isConnected()){
+        if (isConnected()) {
             seiQuery(seiQuery);
-        }else {
+        } else {
             seiQuery.fromLocalDatastore();
             seiQuery(seiQuery);
         }
@@ -95,14 +97,48 @@ public class MainFragment extends Fragment {
         ParseQuery<ParseObject> categoryQuery = ParseQuery.getQuery("CardCategories");
         categoryQuery.whereExists("category");
         categoryQuery.whereExists("color");
-        if (isConnected()){
+        if (isConnected()) {
             categoryQuery(categoryQuery);
-        }else {
+        } else {
             categoryQuery.fromLocalDatastore();
             categoryQuery(categoryQuery);
         }
 
         return v;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mContract = (Contract) getActivity();
+        } catch (ClassCastException e) {
+            throw new IllegalStateException("Activity does not implement contract");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContract = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void categoryQuery(ParseQuery<ParseObject> query) {
@@ -142,10 +178,9 @@ public class MainFragment extends Fragment {
                             Toast toast = Toast.makeText(getActivity(), mItems.get(position) + " selected", Toast.LENGTH_SHORT);
                             toast.show();
                             String colourOfCard = mColours.get(position);
-                            Intent i = new Intent(getActivity(), CardsActivity.class);
-                            i.putExtra(CardsActivity.INTENT_PASS_CATEGORY, true);
-                            i.putExtra(CardsActivity.TAG, colourOfCard);
-                            startActivity(i);
+                            if (mContract != null) {
+                                mContract.selectedCategoryPosition(position, colourOfCard);
+                            }
                         }
                     });
                 } else {
@@ -193,12 +228,9 @@ public class MainFragment extends Fragment {
                             toast.show();
                             int seiIdToPass = mSEIIds[position];
                             Log.d("passed ID", "here: " + seiIdToPass);
-                            Intent i = new Intent(getActivity(), CardsActivity.class);
-                            Bundle extras = new Bundle();
-                            extras.putBoolean(CardsActivity.INTENT_PASS_CATEGORY, false);
-                            extras.putInt(CardsActivity.TAG, seiIdToPass);
-                            i.putExtras(extras);
-                            startActivity(i);
+                            if (mContract != null) {
+                                mContract.selectedSEIPostion(position, seiIdToPass);
+                            }
                         }
                     });
                 } else {
@@ -208,7 +240,7 @@ public class MainFragment extends Fragment {
         });
     }
 
-    private boolean isConnected(){
+    private boolean isConnected() {
         ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -260,21 +292,10 @@ public class MainFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_main, menu);
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public interface Contract {
+        public void selectedSEIPostion(int position, int seiIdToPass);
 
-        //noinspection SimplifiableIfStatement
-
-        return super.onOptionsItemSelected(item);
+        public void selectedCategoryPosition(int position, String colourOfCard);
     }
 }

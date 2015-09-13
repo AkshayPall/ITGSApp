@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements MainFragment.Contract{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,4 +35,21 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    public void selectedSEIPostion(int position, int seiIdToPass) {
+        Intent i = new Intent(this, CardsActivity.class);
+        Bundle extras = new Bundle();
+        extras.putBoolean(CardsActivity.INTENT_PASS_CATEGORY, false);
+        extras.putInt(CardsActivity.TAG, seiIdToPass);
+        i.putExtras(extras);
+        startActivity(i);
+    }
+
+    @Override
+    public void selectedCategoryPosition(int position, String colourOfCard) {
+        Intent i = new Intent(this, CardsActivity.class);
+        i.putExtra(CardsActivity.INTENT_PASS_CATEGORY, true);
+        i.putExtra(CardsActivity.TAG, colourOfCard);
+        startActivity(i);
+    }
 }

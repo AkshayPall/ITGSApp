@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public class CardsActivity extends ActionBarActivity {
+public class CardsActivity extends ActionBarActivity implements CardsFragment.Contract{
 
     public static final String TAG = CardsFragment.TAG;
     public static final String INTENT_PASS_CATEGORY = CardsFragment.INTENT_PASS_CATEGORY;
@@ -43,5 +43,16 @@ public class CardsActivity extends ActionBarActivity {
                     .add(R.id.cards_list_fragment_container, cardsFragment)
                     .commit();
         }
+    }
+
+    @Override
+    public void selectedPosition(int position, String colour, String cardText, String cardTitle) {
+        Intent i = new Intent(this, InfoCard.class);
+        Bundle extras = new Bundle();
+        extras.putString("COLOUR", colour);
+        extras.putString("TAG1", cardText);
+        extras.putString("TITLE", cardTitle);
+        i.putExtras(extras);
+        startActivity(i);
     }
 }

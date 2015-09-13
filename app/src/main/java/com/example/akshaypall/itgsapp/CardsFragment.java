@@ -1,6 +1,7 @@
 package com.example.akshaypall.itgsapp;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -51,6 +52,7 @@ public class CardsFragment extends Fragment {
     private CardAdapter mAdapter;
     private static final String TITLE_PIN_LABEL = "Titles";
     private static final String CARD_NUMBER_PIN_LABEL = "Titles";
+    private Contract mContract;
 
     public CardsFragment() {
         // Required empty public constructor
@@ -115,6 +117,45 @@ public class CardsFragment extends Fragment {
         return v;
     }
 
+    @Override
+    public void onDestroy() {
+        Toast exitToast = Toast.makeText(getActivity(), "Loading...", Toast.LENGTH_SHORT);
+        exitToast.show();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try{
+            mContract = (Contract)getActivity();
+        }catch (ClassCastException e){
+            throw new IllegalStateException("Activity does not implement contract");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mContract = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_cards, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up addButton, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void cardsActivityQuery() {
         mQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -143,13 +184,12 @@ public class CardsFragment extends Fragment {
                     mCardsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                            Intent i = new Intent(getActivity(), InfoCard.class);
-                            Bundle extras = new Bundle();
-                            extras.putString("COLOUR", mColours.get(position));
-                            extras.putString("TAG1", mCardText.get(position));
-                            extras.putString("TITLE", mCardTitle.get(position));
-                            i.putExtras(extras);
-                            startActivity(i);
+                            String colour = mColours.get(position);
+                            String cardText = mCardText.get(position);
+                            String cardTitle = mCardTitle.get(position);
+                            if(mContract != null){
+                                mContract.selectedPosition(position, colour, cardText, cardTitle);
+                            }
                         }
                     });
 
@@ -167,30 +207,6 @@ public class CardsFragment extends Fragment {
         boolean connected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
         return connected;
-    }
-
-    @Override
-    public void onDestroy() {
-        Toast exitToast = Toast.makeText(getActivity(), "Loading...", Toast.LENGTH_SHORT);
-        exitToast.show();
-        super.onDestroy();
-    }
-
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_cards, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up addButton, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
     }
 
     private class CardAdapter extends ArrayAdapter<String> {
@@ -215,5 +231,9 @@ public class CardsFragment extends Fragment {
             Log.d("getView", "get view called and finished");
             return convertView;
         }
+    }
+
+    public interface Contract{
+        public void selectedPosition(int position, String colour, String cardText, String cardTitle);
     }
 }
