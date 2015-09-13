@@ -1,49 +1,7 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
-
-    <TextView
-        android:id="@+id/all_title_row"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/row_height"
-        android:background="#FFFFFF"
-        android:paddingBottom="@dimen/static_title_row_padding"
-        android:paddingLeft="@dimen/activity_vertical_margin"
-        android:paddingTop="@dimen/static_title_row_padding"
-        android:text="All"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/category_divider_bottom_margin"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:layout_marginTop="@dimen/category_divider_top_margin"
-        android:text="@string/headingOne"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
-
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="50"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/category_divider_bottom_margin"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
-        android:layout_marginTop="@dimen/category_divider_top_margin"
-        android:text="@string/headingSEI"
-        android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
-
-    <ListView
-        android:id="@+id/sei_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="50"/>
-</LinearLayout>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:id="@+id/main_list_fragment_container"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:orientation="vertical"
+             tools:context=".MainActivity"/>

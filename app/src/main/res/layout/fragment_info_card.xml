@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:paddingBottom="8dp"
+              tools:context="com.example.akshaypall.itgsapp.InfoCard">
+
+    <TextView
+        android:id="@+id/card_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
+        android:padding="@dimen/card_text_padding"
+        android:text="@string/lorem_ipsum"
+
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textIsSelectable="true"/>
+
+</LinearLayout>

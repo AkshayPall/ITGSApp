@@ -27,177 +27,21 @@ import java.util.List;
 
 
 public class CardsActivity extends ActionBarActivity {
-    public static final String TAG = "CardsActivity";
-    public static final String INTENT_PASS_CATEGORY = "isCategory";
 
-
-    private ListView mCardsGrid;
-    private ArrayList<String> mColours;
-    ParseQuery<ParseObject> mQuery;
-    ArrayList<String> mCardText;
-    ArrayList<String> mCardTitle;
-    private String mCategoryColourForQuery;
-    private int mSEIIdNumberForQuery;
-    private CardAdapter mAdapter;
-    private static final String TITLE_PIN_LABEL = "Titles";
-    private static final String CARD_NUMBER_PIN_LABEL = "Titles";
+    public static final String TAG = CardsFragment.TAG;
+    public static final String INTENT_PASS_CATEGORY = CardsFragment.INTENT_PASS_CATEGORY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cards);
 
-        mCardsGrid = (ListView) findViewById(R.id.cards_list);
-        mCardsGrid.setFastScrollEnabled(true);
-
-        mCardText = new ArrayList<>();
-        mColours = new ArrayList<>();
-        mCardTitle = new ArrayList<>();
-
-        mQuery = ParseQuery.getQuery("CardData");
-
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            //NOTHING
-        } else if (extras.getBoolean(INTENT_PASS_CATEGORY)) {
-            //for categories here TODO: populate list wit categories
-            mCategoryColourForQuery = extras.getString(TAG);
-            mQuery.whereEqualTo("colourID", mCategoryColourForQuery.substring(1));
-        } else {
-            //for SEIid TODO: have to query cardNumbers from CardSEIs data, then query cards from CardsData
-            mSEIIdNumberForQuery = extras.getInt(TAG);
-            Log.d("ID was passed: ", "" + mSEIIdNumberForQuery);
-            final ParseQuery<ParseObject> seiCardNumQuery = ParseQuery.getQuery("CardsSEIs");
-            seiCardNumQuery.whereEqualTo("SEI", mSEIIdNumberForQuery);
-            seiCardNumQuery.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(final List<ParseObject> parseObjects, ParseException e) {
-                    if (e == null){
-                        ParseObject.unpinAllInBackground(CARD_NUMBER_PIN_LABEL, parseObjects, new DeleteCallback() {
-                            public void done(ParseException e) {
-                                if (e != null) {
-                                    Log.d("SEI query", "SEI unpinning error " + e);
-                                    return;
-                                }
-                                // Add the latest results for this query to the cache.
-                                ParseObject.pinAllInBackground(CARD_NUMBER_PIN_LABEL, parseObjects);
-                            }
-                        });
-                    }
-                }
-            });
-            mQuery.whereMatchesKeyInQuery("cardId", "card", seiCardNumQuery);
-        }
-
-        if (isConnected()) {
-            cardsActivityQuery();
-        } else{
-            mQuery.fromLocalDatastore();
-            cardsActivityQuery();
-        }
-    }
-
-    private void cardsActivityQuery() {
-        mQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(final List<ParseObject> parseObjects, ParseException e) {
-                if (e == null) {
-                    ParseObject.unpinAllInBackground(TITLE_PIN_LABEL, parseObjects, new DeleteCallback() {
-                        public void done(ParseException e) {
-                            if (e != null) {
-                                Log.d("SEI query", "SEI unpinning error " + e);
-                                return;
-                            }
-                            // Add the latest results for this query to the cache.
-                            ParseObject.pinAllInBackground(TITLE_PIN_LABEL, parseObjects);
-                        }
-                    });
-
-                    Log.d("test", "" + parseObjects.size());
-                    for (int i = 0; i < parseObjects.size(); i++) {
-                        mCardText.add(parseObjects.get(i).getString("text"));
-                        mCardTitle.add(parseObjects.get(i).getString("title"));
-                        mColours.add("#" + parseObjects.get(i).getString("colourID"));
-                        Log.d("CARD INFO", mCardTitle.get(i) + "----" + mCardText.get(i));
-                    }
-                    mAdapter = new CardAdapter(mCardTitle);
-                    mCardsGrid.setAdapter(mAdapter);
-                    mCardsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                            Intent i = new Intent(CardsActivity.this, InfoCard.class);
-                            Bundle extras = new Bundle();
-                            extras.putString("COLOUR", mColours.get(position));
-                            extras.putString("TAG1", mCardText.get(position));
-                            extras.putString("TITLE", mCardTitle.get(position));
-                            i.putExtras(extras);
-                            startActivity(i);
-                        }
-                    });
-
-                } else {
-                    Log.d("Title", "ERROR: " + e.getMessage());
-                }
-            }
-        });
-    }
-
-    private boolean isConnected(){
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean connected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-
-        return connected;
-    }
-
-    @Override
-    protected void onDestroy() {
-        Toast exitToast = Toast.makeText(CardsActivity.this, "Loading...", Toast.LENGTH_SHORT);
-        exitToast.show();
-        super.onDestroy();
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_cards, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up addButton, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    private class CardAdapter
-            extends ArrayAdapter<String> {
-        CardAdapter(ArrayList<String> items) {
-            super(CardsActivity.this, R.layout.item_list_row, R.id.item_text, items);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = super.getView(position, convertView, parent);
-            }
-
-            String item = getItem(position);
-            TextView nameTextView = (TextView) convertView.findViewById(R.id.item_text);
-            ImageView dot = (ImageView) convertView.findViewById(R.id.dot);
-
-            nameTextView.setText(item);
-            dot.setColorFilter(Color.parseColor(mColours.get(position)));
-
-
-            Log.d("getView", "get view called and finished");
-            return convertView;
+        if (getFragmentManager().findFragmentById(R.id.cards_list_fragment_container) == null){
+            CardsFragment cardsFragment = new CardsFragment();
+            cardsFragment.setArguments(getIntent().getExtras());
+            getFragmentManager().beginTransaction()
+                    .add(R.id.cards_list_fragment_container, cardsFragment)
+                    .commit();
         }
     }
 }
